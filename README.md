@@ -1,6 +1,9 @@
 # trib_velocities
 
-2024-04-23, CS: the file that's working is spill_app_inst.R
+2024-04-23, CS: the file that's currently working is spill_app_inst.R.
+
+*******************************
+TRANSMITTAL MESSAGE FROM ALLYSON DILORENZO:
 
 Hi Cherie, 
 

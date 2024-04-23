@@ -1,4 +1,7 @@
 # trib_velocities
+
+2024-04-23, CS: the file that's working is spill_app_inst.R
+
 Hi Cherie, 
 
 Thank you again for lunch this afternoon, I had a great time chatting with you and the food was delicious!

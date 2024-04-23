@@ -1,0 +1,97 @@
+---
+title: "Spills Workstation"
+author: "allycat"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+This R Markdown file provides information on the base functions used in the files spill_app_daily.R and spill_app_inst.R
+The functions were altered within the apps to accommodate necessary changes.
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Let's get to it!
+
+```{r Important libraries, message = FALSE}
+library(shiny)
+library(shinydashboard)
+library(DT)
+library(dataRetrieval)
+library(dplyr)
+```
+
+
+### USGS Online Data Inputs
+
+You can pull data from up to 1 day before with this code, not day of (will be old data). readNWISdv (dv = daily value)
+```{r Daily mean}
+# NORTH BRANCH POTOMAC RIVER AT STEYER, MD
+siteNumber <- "01595000"
+parameterCd <- "00060" # Discharge
+startDate <- "2023-07-17"
+endDate <- "2023-07-17"
+discharge <- readNWISdv(siteNumber, parameterCd, startDate, endDate)
+discharge <- renameNWISColumns(discharge)
+discharge$X_00060_00003
+```
+
+
+
+You can pull instantaneous data at the intervals of data capture specific to the gage. readNWISuv.
+```{r Unit data current}
+# NORTH BRANCH POTOMAC RIVER AT STEYER, MD
+siteNumber <- "01595000"
+parameterCd <- "00060"
+startDate1 <- "2023-07-21"
+endDate1 <- "" # Leaving this blank gives most recent value
+discharge1 <- readNWISuv(siteNumber, parameterCd, startDate1, endDate1, tz = "America/New_York")
+discharge1 <- renameNWISColumns(discharge1)
+discharge1
+```
+
+
+
+You can pull instantaneous data of a specific number of intervals. readNWISuv.
+```{r Unit data current, 5 intervals}
+# NORTH BRANCH POTOMAC RIVER AT STEYER, MD
+discharge2 <- readNWISuv(siteNumber, parameterCd, startDate1, endDate1, tz = "America/New_York")
+discharge2 <- discharge2[order(discharge2$dateTime, decreasing = TRUE), ]
+num_intervals <- 5
+discharge2 <- discharge2[1:num_intervals, ]
+discharge2 <- renameNWISColumns(discharge2)
+discharge2
+discharge2$Flow_Inst
+```
+*order() lets you sort data by dateTime in descending order to get most recent intervals first.*
+
+
+
+You can calculate velocity using most recent discharge rate(s).
+```{r Unit data current, velocity}
+# NORTH BRANCH POTOMAC RIVER AT STEYER, MD
+a <- 0.2 # Dummy 
+b <- 0.3 # Dummy
+
+flow_values <- discharge2$Flow_Inst
+flow_value_now <- discharge2$Flow_Inst[1]
+
+velocity_5 <- a*flow_values^b
+velocity_5 # 5 intervals
+
+velocity_now <- a*flow_value_now^b
+velocity_now # most recent value only
+```
+*Velocity equation is V = a times Q^b, with Q being flow rate, and a/b being coefficients specific to each stream.*
+
+
+```{r Daily mean}
+siteNumber <- "01595000"
+parameterCd <- "00060" # Discharge
+startDate <- "2023-07-21"
+endDate <- "2023-07-21"
+discharge <- readNWISdv(siteNumber, parameterCd, startDate, endDate)
+discharge1 <- discharge$X_00060_00003
+discharge1
+```
